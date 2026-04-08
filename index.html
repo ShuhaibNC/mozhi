@@ -1,782 +1,734 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mozhi Dictionary</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Baloo+Chettan+2:wght@400..800&family=Orbitron:wght@900&display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mozhi - Malayalam Dictionary</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Chettan+2:wght@400;600;800&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
-            --bg-card: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #000000;
-            --text-muted: #94a3b8;
-            --border: #e2e8f0;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --radius: 12px;
-            --radius-sm: 8px;
-        }
+    :root {
+      --bg:        #0a0a0f;
+      --surface:   #111118;
+      --glass:     rgba(255,255,255,0.04);
+      --glass-hov: rgba(255,255,255,0.07);
+      --border:    rgba(255,255,255,0.08);
+      --border-hi: rgba(255,255,255,0.15);
+      --blue:      #4f8ef7;
+      --violet:    #a78bfa;
+      --cyan:      #22d3ee;
+      --text:      #e8eaf0;
+      --text-2:    #8b8fa8;
+      --text-3:    #4b4f66;
+      --radius:    16px;
+      --radius-sm: 10px;
+    }
 
-        [data-theme="dark"] {
-            --bg-primary: #212121;
-            --bg-secondary: #303030;
-            --bg-card: #303030;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --border: #404040;
-            --accent: #60a5fa;
-            --accent-hover: #3b82f6;
-        }
+    [data-theme="light"] {
+      --bg:        #f0f2f8;
+      --surface:   #ffffff;
+      --glass:     rgba(0,0,0,0.03);
+      --glass-hov: rgba(0,0,0,0.06);
+      --border:    rgba(0,0,0,0.08);
+      --border-hi: rgba(0,0,0,0.18);
+      --text:      #0f1020;
+      --text-2:    #555875;
+      --text-3:    #adb0c5;
+    }
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: all 0.3s ease;
-        }
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.4s, color 0.4s;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            min-height: 100vh;
-            margin-top: 30px;
-        }
+    /* ── BACKGROUND GLOW ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(79,142,247,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(167,139,250,0.07) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        .title {
-            font-family: 'Baloo Chettan 2', system-ui, -apple-system, sans-serif;
-            font-size: 3rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    /* ── TOPBAR ── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
 
-        .theme-toggle {
-            position: relative;
-            width: 60px;
-            height: 30px;
-            background: var(--bg-secondary);
-            border-radius: 15px;
-            border: 2px solid var(--border);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+    [data-theme="light"] .topbar {
+      background: rgba(240,242,248,0.88);
+    }
 
-        .theme-toggle::before {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: var(--accent);
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: transform 0.3s ease;
-            box-shadow: var(--shadow);
-        }
+    .logo {
+      font-family: 'Baloo Chettan 2', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(120deg, var(--blue), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+      user-select: none;
+    }
 
-        [data-theme="dark"] .theme-toggle::before {
-            transform: translateX(28px);
-        }
+    .topbar-right { display: flex; align-items: center; gap: 1.25rem; }
 
-        .search-section {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            margin-top: 2rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
+    .about-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-2);
+      background: none;
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .about-btn:hover { color: var(--text); border-color: var(--border-hi); background: var(--glass); }
 
-        .search-input {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            font-size: 1.1rem;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-            outline: none;
-        }
+    /* Theme toggle */
+    .toggle-wrap { display: flex; align-items: center; gap: 0.6rem; }
+    .toggle-label { font-size: 0.78rem; font-weight: 600; color: var(--text-3); letter-spacing: 0.05em; text-transform: uppercase; }
+    .toggle {
+      width: 44px; height: 24px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      background: var(--blue);
+      border-radius: 50%;
+      top: 3px; left: 3px;
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1), background 0.3s;
+      box-shadow: 0 0 8px rgba(79,142,247,0.5);
+    }
+    [data-theme="light"] .toggle::after { transform: translateX(20px); background: var(--violet); box-shadow: 0 0 8px rgba(167,139,250,0.5); }
 
-        .search-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
-        }
+    /* ── LOADER OVERLAY ── */
+    #loader {
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--bg);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2rem;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-        .search-input::placeholder {
-            color: var(--text-muted);
-        }
+    .loader-logo {
+      font-family: 'Baloo Chettan 2', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(120deg, var(--blue), var(--violet), var(--cyan));
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shiftGrad 2s linear infinite;
+    }
+    @keyframes shiftGrad { 0%{background-position:0%} 100%{background-position:200%} }
 
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            height: 400px;
-        }
+    .loader-bar-wrap {
+      width: 240px;
+      height: 3px;
+      background: var(--glass);
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+    .loader-bar {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--blue), var(--violet));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
 
-        .suggestions-panel,
-        .meaning-panel {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+    .loader-status {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-3);
+      letter-spacing: 0.03em;
+      min-height: 1.2em;
+      text-align: center;
+    }
 
-        .panel-header {
-            padding: 1.5rem;
-            background: var(--bg-primary);
-            border-bottom: 1px solid var(--border);
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text-primary);
-        }
+    .loader-dots {
+      display: inline-flex; gap: 6px; align-items: center;
+    }
+    .loader-dots span {
+      width: 6px; height: 6px;
+      background: var(--blue);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+    .loader-dots span:nth-child(2) { animation-delay: 0.2s; background: var(--violet); }
+    .loader-dots span:nth-child(3) { animation-delay: 0.4s; background: var(--cyan); }
+    @keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
 
-        .suggestions-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0;
-        }
+    /* ── MAIN LAYOUT ── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 88px 2rem 3rem;
+    }
 
-        .suggestion-item {
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-secondary);
-        }
+    /* ── SEARCH ── */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 2rem;
+    }
 
-        .suggestion-item:hover {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transform: translateX(4px);
-        }
+    .search-icon {
+      position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%);
+      color: var(--text-3);
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+    .search-wrap:focus-within .search-icon { color: var(--blue); }
 
-        .suggestion-item:last-child {
-            border-bottom: none;
-        }
+    .search-kbd {
+      position: absolute; right: 1.1rem; top: 50%; transform: translateY(-50%);
+      display: flex; align-items: center; gap: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-3);
+      background: var(--glass);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
 
-        .meaning-content {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
-        }
+    #searchInput {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    #searchInput::placeholder { color: var(--text-3); font-weight: 400; }
+    #searchInput:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(79,142,247,0.12), 0 0 20px rgba(79,142,247,0.06);
+      background: var(--surface);
+    }
+    #searchInput:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        .selected-word {
-            font-family: 'Baloo Chettan 2', system-ui, -apple-system, sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 1rem;
-            text-align: center;
-        }
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 1.5rem;
+      height: 480px;
+    }
 
-        .meanings-list {
-            list-style: none;
-        }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      transition: background 0.4s, border-color 0.4s;
+    }
 
-        .meaning-item {
-            font-family: 'Baloo Chettan 2', system-ui, -apple-system, sans-serif;
-            padding: 0.75rem 0;
-            position: relative;
-            padding-left: 2rem;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            line-height: 1.7;
-            font-weight: 800;
-        }
+    .panel-head {
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.6rem;
+      flex-shrink: 0;
+    }
+    .panel-head-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .panel-head-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--blue);
+      background: rgba(79,142,247,0.1);
+      border: 1px solid rgba(79,142,247,0.2);
+      padding: 1px 7px;
+      border-radius: 99px;
+      display: none;
+    }
+    .panel-head-count.visible { display: block; }
 
-        .meaning-item::before {
-            content: '•';
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-track { background: transparent; }
+    .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
 
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: var(--text-muted);
-            text-align: center;
-        }
+    /* ── EMPTY STATE ── */
+    .empty {
+      height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.75rem;
+      color: var(--text-3);
+      text-align: center;
+      padding: 2rem;
+    }
+    .empty-icon { font-size: 2.5rem; opacity: 0.4; }
+    .empty-text { font-size: 0.85rem; font-weight: 500; line-height: 1.5; }
 
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
+    /* ── SUGGESTIONS ── */
+    .sug-item {
+      padding: 0.75rem 0.9rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-2);
+      transition: background 0.15s, color 0.15s, transform 0.15s;
+      animation: fadeSlide 0.2s ease-out both;
+    }
+    .sug-item:hover { background: var(--glass-hov); color: var(--text); transform: translateX(3px); }
+    .sug-item.active {
+      background: rgba(79,142,247,0.1);
+      color: var(--blue);
+      border-left: 2px solid var(--blue);
+      padding-left: calc(0.9rem - 2px);
+    }
+    @keyframes fadeSlide {
+      from { opacity:0; transform:translateX(-10px); }
+      to   { opacity:1; transform:translateX(0); }
+    }
 
-        .menu-bar {
-            background: #181818;
-            border-bottom: 1px solid #404040;
-            padding: 0.5rem 2rem;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .sug-item mark {
+      background: none;
+      color: var(--blue);
+      font-weight: 700;
+    }
 
-        .menu-left {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
+    /* ── MEANING ── */
+    .word-title {
+      font-family: 'Baloo Chettan 2', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 800;
+      background: linear-gradient(120deg, var(--blue), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.25rem;
+      padding: 0.25rem 0.5rem;
+    }
 
-        .menu-title {
-            font-family: 'Baloo Chettan 2', system-ui, -apple-system, sans-serif;
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #60a5fa, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    .meanings-list { padding: 0 0.25rem; }
 
-        .menu-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
+    .meaning-item {
+      font-family: 'Baloo Chettan 2', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      padding: 0.65rem 0.75rem 0.65rem 1.5rem;
+      position: relative;
+      border-radius: 8px;
+      animation: fadeSlide 0.25s ease-out both;
+      line-height: 1.65;
+      transition: background 0.15s;
+    }
+    .meaning-item:hover { background: var(--glass); }
+    .meaning-item::before {
+      content: '';
+      position: absolute;
+      left: 0.5rem; top: 50%; transform: translateY(-50%);
+      width: 5px; height: 5px;
+      background: var(--blue);
+      border-radius: 50%;
+    }
 
-        .menu-item {
-            position: relative;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-sm);
-            transition: all 0.2s ease;
-            color: #cbd5e1;
-            background-color: #303030;
-        }
+    /* ── MODAL ── */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
 
-        .menu-item:hover {
-            background: #181818;
-            color: #f1f5f9;
-        }
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      animation: popIn 0.25s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes popIn {
+      from { opacity:0; transform:scale(0.92) translateY(12px); }
+      to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(120deg, var(--blue), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .modal-body {
+      font-size: 0.9rem;
+      color: var(--text-2);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+    .modal-body a { color: var(--blue); text-decoration: none; }
+    .modal-btn {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.03em;
+      padding: 0.65rem 2rem;
+      border-radius: 99px;
+      background: linear-gradient(120deg, var(--blue), var(--violet));
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .modal-btn:hover { opacity: 0.88; transform: translateY(-1px); }
 
-        .dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: #181818;
-            border: 1px solid #404040;
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow-lg);
-            min-width: 120px;
-            display: none;
-            z-index: 200;
-        }
+    /* ── STAT BAR ── */
+    .stat-bar {
+      display: flex; align-items: center; justify-content: center; gap: 2rem;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+    .stat {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--text-3);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .stat.visible { opacity: 1; }
+    .stat-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--blue);
+      font-weight: 500;
+    }
 
-        .dropdown-item {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #cbd5e1;
-        }
-
-        .dropdown-item:hover {
-            background: #303030;
-            color: #f1f5f9;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 2rem;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: var(--shadow-lg);
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .modal-text {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        .btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 0.75rem 2rem;
-            border-radius: var(--radius-sm);
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            background: var(--accent-hover);
-            transform: translateY(-1px);
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #404040;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #505050;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-                height: auto;
-            }
-
-            .suggestions-panel,
-            .meaning-panel {
-                height: 300px;
-            }
-
-            .menu-title {
-                font-size: 1.5rem;
-                left: auto;
-            }
-
-            .menu-item {
-                padding: .5rem;
-                margin: 0 0.5rem;
-            }
-
-            .menu-left {
-                gap: .5rem;
-            }
-
-            .menu-right {
-                gap: 1rem;
-            }
-
-            .dark-text {
-                font-size: 1rem;
-            }
-            .theme-toggle{
-                width: 50px;
-                height: 20px;
-            }
-            .theme-toggle::before{
-                width: 18px;
-                height: 18px;
-                top: auto;
-                left: 0;
-            }
-            .menu-bar {
-                padding: 1rem 1rem;
-            }
-        }
-            /* Animation for suggestions */
-            .suggestion-item {
-                animation: slideIn 0.3s ease-out;
-            }
-
-            @keyframes slideIn {
-                from {
-                    opacity: 0;
-                    transform: translateX(-20px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
-            }
-
-            /* Menu spacing adjustment */
-            .container {
-                margin-top: 30px;
-            }
-    </style>
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; height: auto; }
+      .panel { height: 280px; }
+      .page { padding: 76px 1rem 2rem; }
+      .stat-bar { gap: 1rem; }
+    }
+  </style>
 </head>
-
 <body data-theme="dark">
-    <div class="menu-bar">
-        <div class="menu-left">
-            <div class="menu-title">മൊഴി</div>
-            <div class="menu-item" onclick="toggleDropdown('aboutDropdown')">
-                About
-                <div id="aboutDropdown" class="dropdown">
-                    <div class="dropdown-item" onclick="showAbout()">Credit</div>
-                </div>
-            </div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">മൊഴി</div>
+  <div class="loader-dots">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="loader-bar-wrap">
+    <div class="loader-bar" id="loaderBar"></div>
+  </div>
+  <div class="loader-status" id="loaderStatus">Initializing…</div>
+</div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo"><a href="/" style="text-decoration: none;">മൊഴി</a></div>
+  <div class="topbar-right">
+    <button class="about-btn" onclick="openModal()">About</button>
+    <div class="toggle-wrap">
+      <span class="toggle-label">Dark</span>
+      <div class="toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme"></div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="page">
+
+  <div class="stat-bar" id="statBar">
+    <div class="stat" id="statWords">
+      <span>Words</span>
+      <span class="stat-val" id="statWordCount">—</span>
+    </div>
+    <div class="stat" id="statLang">
+      <span>Lang</span>
+      <span class="stat-val">EN → ML</span>
+    </div>
+    
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search for a word…" autocomplete="off" spellcheck="false" disabled />
+    <div class="search-kbd">↵ Enter</div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-head-title">Suggestions</span>
+        <span class="panel-head-count" id="sugCount"></span>
+      </div>
+      <div class="panel-body" id="sugBody">
+        <div class="empty">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-text">Start typing to see suggestions</div>
         </div>
-        <div class="menu-right">
-            <span class="dark-text" style="color: #cbd5e1; font-weight: 500">Dark theme</span>
-            <div class="theme-toggle" onclick="toggleTheme()"></div>
-        </div>
+      </div>
     </div>
 
-    <div class="container">
-        <div class="search-section">
-            <input type="text" class="search-input" placeholder="Search for a word..." id="searchInput"
-                oninput="searchWords()" />
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-head-title">Meaning</span>
+      </div>
+      <div class="panel-body" id="meanBody">
+        <div class="empty">
+          <div class="empty-icon">📖</div>
+          <div class="empty-text">Select a word to view its meaning</div>
         </div>
-
-        <div class="content-grid">
-            <div class="suggestions-panel">
-                <div class="panel-header">Suggestions</div>
-                <div class="suggestions-list" id="suggestionsList">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🔍</div>
-                        <div>Start typing to see suggestions</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="meaning-panel">
-                <div class="panel-header">Meaning</div>
-                <div class="meaning-content" id="meaningContent">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📖</div>
-                        <div>Select a word to see its meaning</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
+</main>
 
-    <!-- About Modal -->
-    <div id="aboutModal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">About Mozhi Dictionary</h2>
-            <p class="modal-text">
-                Made by ShuhaibNC<br />Credit: Kailash Nadh (dataset)
-            </p>
-            <button class="btn" onclick="closeModal()">OK</button>
-        </div>
+<!-- ABOUT MODAL -->
+<div class="modal-backdrop" id="modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-title">About മൊഴി</div>
+    <div class="modal-body">
+      An English–Malayalam dictionary.<br/>
+      Built by <strong>ShuhaibNC</strong><br/>
+      Dataset by <a href="https://nadh.in" target="_blank">Kailash Nadh</a>
     </div>
+    <button class="modal-btn" onclick="closeModal()">Close</button>
+  </div>
+</div>
 
-    <script>
-        // Dictionary data - will be loaded from enml.json
-        let dictionaryData = {};
-        let allWords = [];
-        let isDataLoaded = false;
+<script>
+  /* ── Theme ── */
+  const saved = (() => { try { return localStorage.getItem('theme') || 'dark'; } catch { return 'dark'; } })();
+  document.body.setAttribute('data-theme', saved);
 
-        // Load dictionary data from JSON file
-        async function loadDictionaryData() {
-            try {
-                showLoadingState();
-                const response = await fetch("enml.json");
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                dictionaryData = await response.json();
-                allWords = Object.keys(dictionaryData).sort();
-                isDataLoaded = true;
+  function toggleTheme() {
+    const t = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', t);
+    try { localStorage.setItem('theme', t); } catch {}
+  }
 
-                console.log(`✅ Dictionary loaded: ${allWords.length} words`);
-                hideLoadingState();
+  /* ── Modal ── */
+  function openModal() { document.getElementById('modal').classList.add('open'); }
+  function closeModal(e) {
+    if (!e || e.target === document.getElementById('modal')) {
+      document.getElementById('modal').classList.remove('open');
+    }
+  }
 
-                // Enable search input
-                document.getElementById("searchInput").disabled = false;
-                document.getElementById("searchInput").placeholder =
-                    "Search for a word...";
-            } catch (error) {
-                console.error("❌ Error loading dictionary:", error);
-                showErrorState(error.message);
-            }
-        }
+  /* ── Loader helpers ── */
+  let loaderProgress = 0;
+  function setProgress(p, msg) {
+    loaderProgress = Math.max(loaderProgress, p);
+    document.getElementById('loaderBar').style.width = loaderProgress + '%';
+    if (msg) document.getElementById('loaderStatus').textContent = msg;
+  }
 
-        function showLoadingState() {
-            const suggestionsList = document.getElementById("suggestionsList");
-            const meaningContent = document.getElementById("meaningContent");
+  function hideLoader() {
+    const l = document.getElementById('loader');
+    l.classList.add('hidden');
+    setTimeout(() => l.remove(), 700);
+  }
 
-            suggestionsList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">⏳</div>
-                    <div>Loading dictionary...</div>
-                </div>
-            `;
+  /* ── Dictionary ── */
+  let dict = {}, allWords = [], ready = false, activeWord = null;
 
-            meaningContent.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">⏳</div>
-                    <div>Loading dictionary data...</div>
-                </div>
-            `;
+  async function loadDict() {
+    setProgress(5, 'Fetching dictionary file…');
+    try {
+      const res = await fetch('enml.json');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-            // Disable search input while loading
-            document.getElementById("searchInput").disabled = true;
-            document.getElementById("searchInput").placeholder =
-                "Loading dictionary...";
-        }
+      setProgress(30, 'Downloading data…');
 
-        function hideLoadingState() {
-            const suggestionsList = document.getElementById("suggestionsList");
-            const meaningContent = document.getElementById("meaningContent");
+      /* Stream + measure progress if Content-Length available */
+      const len = parseInt(res.headers.get('Content-Length') || '0');
+      let received = 0;
+      const reader = res.body.getReader();
+      const chunks = [];
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        received += value.length;
+        if (len) setProgress(30 + Math.round((received / len) * 45), 'Downloading data…');
+      }
+      setProgress(75, 'Parsing JSON…');
 
-            suggestionsList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">🔍</div>
-                    <div>Start typing to see suggestions</div>
-                </div>
-            `;
+      /* Small yield so browser can repaint */
+      await new Promise(r => setTimeout(r, 30));
 
-            meaningContent.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">📖</div>
-                    <div>Select a word to see its meaning</div>
-                </div>
-            `;
-        }
+      const raw = new TextDecoder().decode(
+        new Uint8Array(chunks.reduce((acc, c) => { const n = new Uint8Array(acc.length + c.length); n.set(acc); n.set(c, acc.length); return n; }, new Uint8Array(0)))
+      );
+      dict = JSON.parse(raw);
 
-        function showErrorState(errorMessage) {
-            const suggestionsList = document.getElementById("suggestionsList");
-            const meaningContent = document.getElementById("meaningContent");
+      setProgress(92, 'Building index…');
+      await new Promise(r => setTimeout(r, 20));
+      allWords = Object.keys(dict).sort();
 
-            suggestionsList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">❌</div>
-                    <div>Failed to load dictionary</div>
-                    <div style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.7;">${errorMessage}</div>
-                </div>
-            `;
+      setProgress(100, `Ready — ${allWords.length.toLocaleString()} words`);
 
-            meaningContent.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">❌</div>
-                    <div>Dictionary not available</div>
-                    <div style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.7;">Make sure enml.json is in the same folder</div>
-                </div>
-            `;
+      /* Show stats */
+      document.getElementById('statWordCount').textContent = allWords.length.toLocaleString();
+      document.querySelectorAll('.stat').forEach(s => s.classList.add('visible'));
 
-            document.getElementById("searchInput").disabled = true;
-            document.getElementById("searchInput").placeholder =
-                "Dictionary not available";
-        }
+      ready = true;
+      const inp = document.getElementById('searchInput');
+      inp.disabled = false;
+      inp.placeholder = 'Search for a word…';
 
-        // Theme management
-        function toggleTheme() {
-            const body = document.body;
-            const currentTheme = body.getAttribute("data-theme");
-            const newTheme = currentTheme === "light" ? "dark" : "light";
-            body.setAttribute("data-theme", newTheme);
+      await new Promise(r => setTimeout(r, 350));
+      hideLoader();
+      inp.focus();
 
-            // Save theme preference
-            try {
-                localStorage.setItem("theme", newTheme);
-            } catch (e) {
-                // Handle case where localStorage is not available
-                console.log("LocalStorage not available, theme not saved");
-            }
-        }
+    } catch (err) {
+      setProgress(100, '');
+      document.getElementById('loaderStatus').innerHTML =
+        `<span style="color:#f87171">Failed: ${err.message}</span>`;
+      document.getElementById('sugBody').innerHTML =
+        `<div class="empty"><div class="empty-icon">❌</div><div class="empty-text">Could not load enml.json<br/><small>${err.message}</small></div></div>`;
+      setTimeout(hideLoader, 2500);
+    }
+  }
 
-        // Load saved theme
-        try {
-            const savedTheme = localStorage.getItem("theme") || "dark";
-            document.body.setAttribute("data-theme", savedTheme);
-        } catch (e) {
-            // If localStorage is not available, use dark theme as default
-            document.body.setAttribute("data-theme", "dark");
-        }
+  /* ── Search ── */
+  function search() {
+    if (!ready) return;
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+    const body = document.getElementById('sugBody');
+    const cnt  = document.getElementById('sugCount');
 
-        // Menu functions
-        function toggleDropdown(id) {
-            const dropdown = document.getElementById(id);
-            const allDropdowns = document.querySelectorAll(".dropdown");
+    if (!q) {
+      body.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Start typing to see suggestions</div></div>`;
+      cnt.textContent = ''; cnt.classList.remove('visible');
+      return;
+    }
 
-            allDropdowns.forEach((d) => {
-                if (d.id !== id) d.style.display = "none";
-            });
+    const hits = allWords.filter(w => w.toLowerCase().startsWith(q)).slice(0, 60);
 
-            dropdown.style.display =
-                dropdown.style.display === "block" ? "none" : "block";
-        }
+    if (!hits.length) {
+      body.innerHTML = `<div class="empty"><div class="empty-icon">🤷</div><div class="empty-text">No matches found</div></div>`;
+      cnt.textContent = ''; cnt.classList.remove('visible');
+      return;
+    }
 
-        // Close dropdowns when clicking outside
-        document.addEventListener("click", function (event) {
-            if (!event.target.closest(".menu-item")) {
-                document
-                    .querySelectorAll(".dropdown")
-                    .forEach((d) => (d.style.display = "none"));
-            }
-        });
+    cnt.textContent = hits.length === 60 ? '60+' : hits.length;
+    cnt.classList.add('visible');
 
-        // Search functionality
-        function searchWords() {
-            if (!isDataLoaded) {
-                return; // Don't search if data isn't loaded yet
-            }
+    const esc = s => s.replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+    const boldQ = w => {
+      const i = w.toLowerCase().indexOf(q);
+      if (i === -1) return esc(w);
+      return esc(w.slice(0,i)) + '<mark>' + esc(w.slice(i, i+q.length)) + '</mark>' + esc(w.slice(i+q.length));
+    };
 
-            const query = document
-                .getElementById("searchInput")
-                .value.toLowerCase()
-                .trim();
-            const suggestionsList = document.getElementById("suggestionsList");
+    body.innerHTML = hits.map((w,i) =>
+      `<div class="sug-item${w === activeWord ? ' active' : ''}" 
+            style="animation-delay:${Math.min(i*12,120)}ms"
+            onclick="selectWord('${w.replace(/'/g,"\\'")}')">
+         ${boldQ(w)}
+       </div>`
+    ).join('');
+  }
 
-            if (!query) {
-                suggestionsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🔍</div>
-                        <div>Start typing to see suggestions</div>
-                    </div>
-                `;
-                return;
-            }
+  function selectWord(word) {
+    activeWord = word;
+    const meanings = dict[word] || [];
+    const body = document.getElementById('meanBody');
 
-            // Find matching words (case-insensitive, starts with query)
-            const matches = allWords
-                .filter((word) => word.toLowerCase().startsWith(query))
-                .slice(0, 50); // Limit to 50 results for performance
+    if (!meanings.length) {
+      body.innerHTML = `<div class="empty"><div class="empty-icon">❓</div><div class="empty-text">No meanings found</div></div>`;
+    } else {
+      body.innerHTML =
+        `<div class="word-title">${word}</div>
+         <ul class="meanings-list">
+           ${meanings.map((m,i) => `<li class="meaning-item" style="animation-delay:${i*40}ms">${m}</li>`).join('')}
+         </ul>`;
+    }
 
-            if (matches.length === 0) {
-                suggestionsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">❌</div>
-                        <div>No words found</div>
-                    </div>
-                `;
-            } else {
-                suggestionsList.innerHTML = matches
-                    .map(
-                        (word) =>
-                            `<div class="suggestion-item" onclick="selectWord('${word.replace(
-                                /'/g,
-                                "\\'"
-                            )}')">${word}</div>`
-                    )
-                    .join("");
-            }
-        }
+    /* Re-render suggestions to show active highlight */
+    const items = document.querySelectorAll('.sug-item');
+    items.forEach(el => {
+      if (el.textContent.trim() === word) el.classList.add('active');
+      else el.classList.remove('active');
+    });
+  }
 
-        function selectWord(word) {
-            const meaningContent = document.getElementById("meaningContent");
-            const meanings = dictionaryData[word] || [];
+  /* ── Input events ── */
+  const inp = document.getElementById('searchInput');
+  inp.addEventListener('input', search);
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const first = document.querySelector('.sug-item');
+      if (first) {
+        /* Extract plain text word (strip mark tags) */
+        const w = first.textContent.trim();
+        selectWord(w);
+        /* Also highlight the correct item by re-running with active */
+        search();
+      }
+    }
+    if (e.key === 'Escape') { inp.value = ''; search(); }
+  });
 
-            if (meanings.length === 0) {
-                meaningContent.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">❓</div>
-                        <div>No meanings found</div>
-                    </div>
-                `;
-            } else {
-                meaningContent.innerHTML = `
-                    <div class="selected-word">${word}</div>
-                    <ul class="meanings-list">
-                        ${meanings
-                        .map(
-                            (meaning) =>
-                                `<li class="meaning-item">${meaning}</li>`
-                        )
-                        .join("")}
-                    </ul>
-                `;
-            }
-
-            // Highlight selected word
-            document.querySelectorAll(".suggestion-item").forEach((item) => {
-                if (item.textContent === word) {
-                    item.style.background = "var(--bg-primary)";
-                    item.style.color = "var(--text-primary)";
-                } else {
-                    item.style.background = "";
-                    item.style.color = "var(--text-secondary)";
-                }
-            });
-        }
-
-        function showAbout() {
-            document.getElementById("aboutModal").style.display = "flex";
-            toggleDropdown("aboutDropdown");
-        }
-
-        function closeModal() {
-            document.getElementById("aboutModal").style.display = "none";
-        }
-
-        // Initialize
-        document.addEventListener("DOMContentLoaded", function () {
-            // Load dictionary data first
-            loadDictionaryData();
-
-            // Focus on search input after a short delay to ensure it's enabled
-            setTimeout(() => {
-                if (isDataLoaded) {
-                    document.getElementById("searchInput").focus();
-                }
-            }, 100);
-        });
-
-        // Handle Enter key
-        document
-            .getElementById("searchInput")
-            .addEventListener("keypress", function (e) {
-                if (e.key === "Enter") {
-                    const firstSuggestion = document.querySelector(".suggestion-item");
-                    if (firstSuggestion) {
-                        firstSuggestion.click();
-                    }
-                }
-            });
-    </script>
+  /* ── Boot ── */
+  loadDict();
+</script>
 </body>
-
 </html>
