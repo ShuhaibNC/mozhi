@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Baloo+Chettan+2:wght@400;600;800&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script src="theme-init.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -32,24 +33,64 @@
       --radius-sm: 4px;
     }
 
-    /* VS Code Light+ */
-    [data-theme="light"] {
-      --bg:        #ffffff;
-      --surface:   #f3f3f3;
-      --titlebar:  #dddddd;
-      --glass:     rgba(0,0,0,0.03);
-      --glass-hov: rgba(0,0,0,0.06);
-      --border:    #e5e5e5;
-      --border-hi: #c8c8c8;
-      --blue:      #0070c1;
-      --violet:    #af00db;
-      --cyan:      #267f99;
-      --focus:     #0090f1;
-      --sel:       #e4f1fb;
-      --text:      #3b3b3b;
-      --text-2:    #616161;
-      --text-3:    #a0a0a0;
+    /* Site themes — same ids as shuhaibnc.github.io (default = the VS Code
+       Dark+ look above). Picked in the palette menu, top right. */
+    html[data-site-theme='amoled'] {
+      color-scheme: dark;
+      --bg: #000000; --surface: #0a0a0a; --titlebar: #111111;
+      --glass: rgba(255,255,255,0.04); --glass-hov: rgba(255,255,255,0.07);
+      --border: #262626; --border-hi: #333333;
+      --blue: #64b5f6; --violet: #ba68c8; --cyan: #4ec9b0;
+      --accent: #64b5f6; --focus: #42a5f5; --sel: #0d2b45;
+      --text: #f2f2f2; --text-2: #b3b3b3; --text-3: #808080;
     }
+    html[data-site-theme='midnight'] {
+      color-scheme: dark;
+      --bg: #0a1128; --surface: #0d1530; --titlebar: #111c3d;
+      --glass: rgba(255,255,255,0.04); --glass-hov: rgba(255,255,255,0.07);
+      --border: #1e2a52; --border-hi: #2a3a68;
+      --blue: #7cb3ff; --violet: #b39ddb; --cyan: #4dd0e1;
+      --accent: #7cb3ff; --focus: #5b9dff; --sel: #16294d;
+      --text: #e6ebf5; --text-2: #aab6d3; --text-3: #7c8aa8;
+    }
+    html[data-site-theme='forest'] {
+      color-scheme: dark;
+      --bg: #0a1a12; --surface: #0d2118; --titlebar: #12291d;
+      --glass: rgba(255,255,255,0.04); --glass-hov: rgba(255,255,255,0.07);
+      --border: #1e3d2c; --border-hi: #2a5240;
+      --blue: #81c784; --violet: #ba68c8; --cyan: #4db6ac;
+      --accent: #4ade80; --focus: #22c55e; --sel: #123f27;
+      --text: #e6f2ea; --text-2: #a9c4b2; --text-3: #7a9a86;
+    }
+    html[data-site-theme='mocha'] {
+      color-scheme: dark;
+      --bg: #1e1e2e; --surface: #181825; --titlebar: #11111b;
+      --glass: rgba(255,255,255,0.04); --glass-hov: rgba(255,255,255,0.07);
+      --border: #313244; --border-hi: #45475a;
+      --blue: #89b4fa; --violet: #cba6f7; --cyan: #94e2d5;
+      --accent: #cba6f7; --focus: #b48cf5; --sel: #313244;
+      --text: #cdd6f4; --text-2: #bac2de; --text-3: #a6adc8;
+    }
+    html[data-site-theme='paper'] {
+      color-scheme: light;
+      --bg: #faf7f0; --surface: #fffdf7; --titlebar: #f3eee3;
+      --glass: rgba(0,0,0,0.03); --glass-hov: rgba(0,0,0,0.06);
+      --border: #ddd5c2; --border-hi: #cfc5ac;
+      --blue: #92400e; --violet: #7c3aed; --cyan: #0f766e;
+      --accent: #b45309; --focus: #92400e; --sel: #f3e5c8;
+      --text: #2b2620; --text-2: #57503f; --text-3: #7d7462;
+    }
+
+    /* Customisation: text size, density, corner radius (same prefs as the site) */
+    html[data-font-size='small'] { font-size: 15px; }
+    html[data-font-size='large'] { font-size: 18px; }
+    html[data-density='compact'] .panel-head { padding: 0.45rem 0.8rem; }
+    html[data-density='compact'] .sug-item { padding: 0.35rem 0.8rem; }
+    html[data-density='compact'] .meaning-item { padding: 0.35rem 0.75rem 0.35rem 1.5rem; }
+    html[data-density='compact'] .grid { gap: 0.8rem; }
+    html[data-density='compact'] #searchInput { padding: 0.65rem 1rem 0.65rem 3rem; }
+    html[data-radius='sharp'] { --radius: 2px; --radius-sm: 2px; }
+    html[data-radius='rounded'] { --radius: 16px; --radius-sm: 12px; }
 
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, 'Syne', sans-serif;
@@ -94,26 +135,60 @@
     }
     .about-btn:hover { color: var(--text); border-color: var(--border-hi); background: var(--glass); }
 
-    .toggle-wrap { display: flex; align-items: center; gap: 0.6rem; }
-    .toggle-label { font-size: 0.75rem; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; }
-    .toggle {
-      width: 40px; height: 22px;
-      background: var(--bg);
-      border: 1px solid var(--border-hi);
-      border-radius: 99px;
+    /* ── THEME PICKER (same as shuhaibnc.github.io) ── */
+    .theme-wrap { position: relative; display: flex; align-items: center; }
+    .theme-btn {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-2);
       cursor: pointer;
-      position: relative;
+      transition: all 0.15s;
     }
-    .toggle::after {
-      content: '';
-      position: absolute;
-      width: 14px; height: 14px;
-      background: var(--accent);
-      border-radius: 50%;
-      top: 3px; left: 3px;
-      transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+    .theme-btn:hover { color: var(--text); border-color: var(--border-hi); background: var(--glass-hov); }
+    .theme-panel {
+      position: absolute; top: 44px; right: 0;
+      width: min(300px, calc(100vw - 32px));
+      display: none; flex-direction: column; gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+      z-index: 300;
     }
-    [data-theme="light"] .toggle::after { transform: translateX(18px); }
+    .theme-panel.open { display: flex; }
+    .tp-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      font-size: 0.85rem; font-weight: 600; color: var(--text-2);
+    }
+    .tp-row select {
+      font-family: inherit; font-size: 0.85rem;
+      background: var(--bg); color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px; cursor: pointer;
+    }
+    .accents { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+    .accents button {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2px solid transparent; cursor: pointer; padding: 0;
+    }
+    .accents button.active { border-color: var(--text); box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--accent); }
+    .accents button.none {
+      background: var(--bg); border-color: var(--border); color: var(--text-2);
+      font-size: 11px; line-height: 1;
+    }
+    .tp-reset {
+      align-self: flex-end;
+      font-family: inherit; font-size: 0.8rem; font-weight: 600;
+      padding: 6px 12px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--glass); color: var(--text); cursor: pointer;
+    }
+    .tp-reset:hover { border-color: var(--border-hi); }
 
     /* ── LOADER OVERLAY ── */
     #loader {
@@ -393,7 +468,7 @@
     }
   </style>
 </head>
-<body data-theme="dark">
+<body>
 
 <!-- LOADER -->
 <div id="loader">
@@ -412,9 +487,42 @@
   <div class="logo"><a href="/" style="text-decoration: none; color: inherit;">മൊഴി</a></div>
   <div class="topbar-right">
     <button class="about-btn" onclick="openModal()">About</button>
-    <div class="toggle-wrap">
-      <span class="toggle-label">Dark</span>
-      <div class="toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme"></div>
+    <div class="theme-wrap">
+      <button class="theme-btn" id="themeBtn" aria-label="Theme settings" aria-haspopup="true" aria-expanded="false" title="Theme settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3-2.5 5-5 5H12c-1.66 0-3 1.34-3 3 0 1.5.5 3 3 3z"/><circle cx="13.5" cy="6.5" r="1" fill="currentColor" stroke="none"/><circle cx="17.5" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="8.5" cy="7.5" r="1" fill="currentColor" stroke="none"/><circle cx="6.5" cy="12.5" r="1" fill="currentColor" stroke="none"/></svg></button>
+      <div class="theme-panel" id="themePanel">
+        <label class="tp-row">Theme
+          <select id="themeSel" aria-label="Theme">
+            <option value="default">Default</option>
+            <option value="amoled">AMOLED</option>
+            <option value="midnight">Midnight</option>
+            <option value="forest">Forest</option>
+            <option value="mocha">Catppuccin Mocha</option>
+            <option value="paper">Paper</option>
+          </select>
+        </label>
+        <div class="tp-row"><span>Accent</span><span class="accents" id="accentRow" aria-label="Accent colour"></span></div>
+        <label class="tp-row">Text size
+          <select id="fontSizeSel" aria-label="Text size">
+            <option value="small">Small</option>
+            <option value="default">Default</option>
+            <option value="large">Large</option>
+          </select>
+        </label>
+        <label class="tp-row">Density
+          <select id="densitySel" aria-label="Density">
+            <option value="comfortable">Comfortable</option>
+            <option value="compact">Compact</option>
+          </select>
+        </label>
+        <label class="tp-row">Corners
+          <select id="radiusSel" aria-label="Corner radius">
+            <option value="default">Default</option>
+            <option value="sharp">Sharp</option>
+            <option value="rounded">Rounded</option>
+          </select>
+        </label>
+        <button class="tp-reset" id="themeReset" type="button">Reset</button>
+      </div>
     </div>
   </div>
 </header>
@@ -483,15 +591,81 @@
 </div>
 
 <script>
-  /* ── Theme ── */
-  const saved = (() => { try { return localStorage.getItem('theme') || 'dark'; } catch { return 'dark'; } })();
-  document.body.setAttribute('data-theme', saved);
-
-  function toggleTheme() {
-    const t = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    document.body.setAttribute('data-theme', t);
-    try { localStorage.setItem('theme', t); } catch {}
+  /* ── Theme + customisation ──
+     Same prefs as shuhaibnc.github.io (key 'shuhaib-site-prefs-v1'), so a
+     theme picked on the main site follows the visitor here, and vice
+     versa. theme-init.js already applied the saved prefs before first
+     paint; this wires up the picker. */
+  const PREFS_KEY = 'shuhaib-site-prefs-v1';
+  const ACCENT_PRESETS = ['#3b82f6', '#0284c7', '#8b5cf6', '#ec4899', '#22c55e', '#14b8a6', '#f59e0b', '#ef4444'];
+  function readPrefs() { try { return JSON.parse(localStorage.getItem(PREFS_KEY) || '{}') || {}; } catch { return {}; } }
+  function applyPrefs(p) {
+    const r = document.documentElement;
+    r.dataset.siteTheme = p.theme || 'default';
+    r.dataset.fontSize = p.fontSize || 'default';
+    r.dataset.density = p.density || 'comfortable';
+    r.dataset.radius = p.radius || 'default';
+    if (p.accent) { r.style.setProperty('--accent', p.accent); r.style.setProperty('--focus', p.accent); }
+    else { r.style.removeProperty('--accent'); r.style.removeProperty('--focus'); }
   }
+  function renderThemePanel() {
+    const prefs = readPrefs();
+    document.getElementById('themeSel').value = prefs.theme || 'default';
+    document.getElementById('fontSizeSel').value = prefs.fontSize || 'default';
+    document.getElementById('densitySel').value = prefs.density || 'comfortable';
+    document.getElementById('radiusSel').value = prefs.radius || 'default';
+    const row = document.getElementById('accentRow');
+    row.innerHTML = '';
+    const saveAndApply = p => { try { localStorage.setItem(PREFS_KEY, JSON.stringify(p)); } catch {} applyPrefs(p); renderThemePanel(); };
+    const none = document.createElement('button');
+    none.type = 'button'; none.className = 'none' + (!prefs.accent ? ' active' : '');
+    none.textContent = '✕'; none.title = 'Theme default accent'; none.setAttribute('aria-label', 'Theme default accent');
+    none.addEventListener('click', () => { const p = readPrefs(); p.accent = ''; saveAndApply(p); });
+    row.appendChild(none);
+    ACCENT_PRESETS.forEach(c => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.style.background = c; b.title = c; b.setAttribute('aria-label', 'Accent ' + c);
+      if (prefs.accent === c) b.className = 'active';
+      b.addEventListener('click', () => { const p = readPrefs(); p.accent = c; saveAndApply(p); });
+      row.appendChild(b);
+    });
+  }
+  function bindPrefSelect(id, key) {
+    document.getElementById(id).addEventListener('change', function () {
+      const p = readPrefs(); p[key] = this.value;
+      try { localStorage.setItem(PREFS_KEY, JSON.stringify(p)); } catch {}
+      applyPrefs(p);
+    });
+  }
+  // One-time migration: the old light/dark toggle stored 'theme'.
+  try {
+    if (!localStorage.getItem(PREFS_KEY) && localStorage.getItem('theme') === 'light') {
+      const p = readPrefs(); p.theme = 'paper';
+      localStorage.setItem(PREFS_KEY, JSON.stringify(p));
+    }
+  } catch {}
+  applyPrefs(readPrefs());
+  renderThemePanel();
+  bindPrefSelect('themeSel', 'theme');
+  bindPrefSelect('fontSizeSel', 'fontSize');
+  bindPrefSelect('densitySel', 'density');
+  bindPrefSelect('radiusSel', 'radius');
+  document.getElementById('themeReset').addEventListener('click', () => {
+    try { localStorage.removeItem(PREFS_KEY); } catch {}
+    applyPrefs({}); renderThemePanel();
+  });
+  document.getElementById('themeBtn').addEventListener('click', e => {
+    e.stopPropagation();
+    const panel = document.getElementById('themePanel');
+    const open = panel.classList.toggle('open');
+    document.getElementById('themeBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.theme-wrap')) document.getElementById('themePanel').classList.remove('open');
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('themePanel').classList.remove('open');
+  });
 
   /* ── Modal ── */
   function openModal() { document.getElementById('modal').classList.add('open'); }
